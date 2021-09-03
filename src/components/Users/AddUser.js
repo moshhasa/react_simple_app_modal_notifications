@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
 import Modal from "../UI/Modal";
 import styles from "./AddUser.module.css";
 
 const AddUser = ({ onAddNewUser }) => {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [error, setError] = useState();
+  const nameIpnputRef = useRef()
+  const ageIpnputRef = useRef()
 
-  const userNameChangeHandler = (e) => setName(e.target.value);
-  const ageChangeHandler = (e) => setAge(e.target.value);
+  const [error, setError] = useState();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (name.trim().length === 0 || age.trim().length === 0) {
+    const enteredName = nameIpnputRef.current.value;
+    const enteredAge = ageIpnputRef.current.value;
+    if (enteredName.trim().length === 0 || enteredAge.trim().length === 0) {
         setError({
             title : 'Invalid Input',
             message : 'please enter a valid name and age'
@@ -22,7 +22,7 @@ const AddUser = ({ onAddNewUser }) => {
       return;
     }
 
-    if (+age < 0) {
+    if (+enteredAge < 0) {
         setError({
             title : 'Invalid Age',
             message : 'Age must be greater than 0'
@@ -31,9 +31,9 @@ const AddUser = ({ onAddNewUser }) => {
       return;
     }
 
-    onAddNewUser({ name: name, age: +age, id: new Date().getTime() });
-    setName("");
-    setAge("");
+    onAddNewUser({ name: enteredName, age: +enteredAge, id: new Date().getTime() });
+    nameIpnputRef.current.value ='';
+    ageIpnputRef.current.value ='';
   };
 
   const closeModalHandler = () => setError();
@@ -50,16 +50,14 @@ const AddUser = ({ onAddNewUser }) => {
           <label htmlFor="username">Username</label>
           <input
             id="username"
-            value={name}
             type="text"
-            onChange={userNameChangeHandler}
+            ref={nameIpnputRef}
           />
           <label htmlFor="age">Age (Years)</label>
           <input
             id="age"
-            value={age}
             type="number"
-            onChange={ageChangeHandler}
+            ref={ageIpnputRef}
           />
           <Button type="submit">Add user</Button>
         </form>
